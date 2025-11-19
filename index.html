@@ -1,11 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sistema Horas IP - UROP IV</title>
   <style>
-    /* estilos compactos (puedes personalizar) */
     body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background:#f0f2f5; margin:0; padding:0; color:#222 }
     header { background:#003366; color:#fff; display:flex; align-items:center; gap:12px; padding:12px 18px; position:sticky; top:0 }
     header img { height:48px }
@@ -34,7 +33,6 @@
   </header>
 
   <main>
-    <!-- LOGIN -->
     <section id="login-section">
       <h2>Ingreso de Usuario</h2>
       <input id="legajo" type="text" placeholder="Legajo personal" />
@@ -43,7 +41,6 @@
       <button onclick="login()">Ingresar</button>
     </section>
 
-    <!-- USUARIO -->
     <section id="user-section" class="hidden">
       <h2>Registro de Horas IP</h2>
       <p><strong>Legajo:</strong> <span id="user-legajo"></span></p>
@@ -70,7 +67,6 @@
       </div>
     </section>
 
-    <!-- SUPERVISOR -->
     <section id="admin-section" class="hidden">
       <h2>Panel del Supervisor</h2>
       <input id="admin-key" type="password" placeholder="Clave de supervisor" />
@@ -80,9 +76,7 @@
   </main>
 
   <script>
-    // ********* CONFIGURA ESTA URL con la URL /exec que te dará GAS tras desplegar *********
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxbkI5epIDXAwCbj8bInK62XZQRSSBEcWFfK-tyn17cpV2DOr_P9tLgqSmxBul_XJu_A/exec";
-
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_NFP4_Iqr5RNAUeGorjq79SIJ4XmzNxcVrvfQEBHVGU_xJ0RK5ARzE8gLtddSyZioBw/exec";
     const LIMITE_HORAS = 40;
     let userLegajo = "";
 
@@ -96,9 +90,7 @@
       document.getElementById('user-section').classList.add('hidden');
       document.getElementById('admin-section').classList.remove('hidden');
     }
-    function cerrarSesion(){
-      location.reload();
-    }
+    function cerrarSesion(){ location.reload(); }
 
     function login(){
       const legajo = document.getElementById('legajo').value.trim();
@@ -109,29 +101,21 @@
       document.getElementById('login-section').classList.add('hidden');
       document.getElementById('user-section').classList.remove('hidden');
       document.getElementById('user-legajo').textContent = legajo;
-      // obtener datos (usa GET a GAS)
       obtenerDatosUsuario();
     }
 
-    // Lectura: usamos GET normal (JSON) y fallback JSONP si hay problema
-    async function obtenerDatosUsuario(){
-      if(!userLegajo) return;
-      try {
-        // intento con GET JSON normal
-        const res = await fetch(`${WEB_APP_URL}?action=getUser&legajo=${encodeURIComponent(userLegajo)}`, { method:'GET', mode:'cors' });
-        if(res.ok){
-          const data = await res.json();
-          if(data && data.status === 'ok'){ renderDatosUsuario(data); return; }
-          // si viene otra cosa, intento JSONP (fallback)
-        }
-      } catch(err){
-        // console.warn('GET JSON falló, intento JSONP', err);
-      }
-      // JSONP fallback (usa callback)
-      jsonpGetUser(userLegajo, function(data){
+    // Obtener datos usuario
+    function obtenerDatosUsuario(){
+      const callbackName = 'cb_user_' + Math.random().toString(36).slice(2);
+      window[callbackName] = function(data){
         if(data && data.status === 'ok') renderDatosUsuario(data);
         else alert('Error al obtener datos de usuario.');
-      });
+        delete window[callbackName];
+        script.remove();
+      };
+      const script = document.createElement('script');
+      script.src = `${WEB_APP_URL}?action=getUser&legajo=${encodeURIComponent(userLegajo)}&callback=${callbackName}`;
+      document.body.appendChild(script);
     }
 
     function renderDatosUsuario(data){
@@ -152,84 +136,66 @@
       });
     }
 
-    // JSONP helper para GET (fallback CORS)
-    function jsonpGetUser(legajo, cb){
-      const callbackName = 'cb_' + Math.random().toString(36).slice(2);
-      window[callbackName] = function(data){ cb(data); delete window[callbackName]; script.remove(); };
+    // Registrar horas vía JSONP (funciona desde GitHub Pages)
+    function registrarHoras(){
+      const fecha = document.getElementById('fecha').value;
+      const horas = parseFloat(document.getElementById('horas').value);
+      const lugar = document.getElementById('lugar').value.trim();
+      const apellido = document.getElementById('apellido').value.trim();
+      const nombre = document.getElementById('nombre').value.trim();
+      if(!fecha || !horas || !lugar){ alert('Complete todos los campos.'); return; }
+      if(horas <= 0){ alert('Horas inválidas.'); return; }
+
+      const callbackName = 'cb_reg_' + Math.random().toString(36).slice(2);
+      window[callbackName] = function(data){
+        if(data && data.status === 'ok'){
+          alert('Horas registradas correctamente.');
+          obtenerDatosUsuario();
+        } else {
+          alert('Error al registrar horas: ' + (data.message || 'desconocido'));
+        }
+        delete window[callbackName];
+        script.remove();
+      };
+
+      const params = new URLSearchParams({
+        action: 'registrar',
+        legajo: userLegajo,
+        apellido, nombre,
+        fecha, horas, lugar,
+        callback: callbackName
+      });
+
       const script = document.createElement('script');
-      script.src = `${WEB_APP_URL}?action=getUser&legajo=${encodeURIComponent(legajo)}&callback=${callbackName}`;
+      script.src = WEB_APP_URL + '?' + params.toString();
       document.body.appendChild(script);
     }
 
-    // Registrar horas: POST JSON
-async function registrarHoras(){
-  const fecha = document.getElementById('fecha').value;
-  const horas = parseFloat(document.getElementById('horas').value);
-  const lugar = document.getElementById('lugar').value.trim();
-  const apellido = document.getElementById('apellido').value.trim();
-  const nombre = document.getElementById('nombre').value.trim();
-
-  if(!fecha || !horas || !lugar){ alert('Complete todos los campos.'); return; }
-  if(horas <= 0){ alert('Horas inválidas.'); return; }
-
-  try {
-    const res = await fetch(WEB_APP_URL, {
-      method:'POST',
-      mode:'cors',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ action:'registrar', legajo: userLegajo, apellido, nombre, fecha, horas, lugar })
-    });
-    const data = await res.json();
-    if(data && data.status === 'ok'){
-      alert('Horas registradas correctamente.');
-      obtenerDatosUsuario();
-    } else {
-      alert('Error: ' + (data.message || 'Respuesta inválida'));
-    }
-  } catch(err){
-    console.error(err);
-    alert('Error al registrar horas. Revisa la consola.');
-  }
-}
-
-
-
-    // Panel supervisor: GET all
-    async function verGeneral(){
+    // Panel supervisor
+    function verGeneral(){
       const key = document.getElementById('admin-key').value.trim();
       if(!key){ alert('Ingresa la clave de supervisor.'); return; }
-      try {
-        const res = await fetch(`${WEB_APP_URL}?action=getAll&key=${encodeURIComponent(key)}`, { method:'GET', mode:'cors' });
-        const data = await res.json();
-        if(data.status === 'unauthorized'){ alert('Clave incorrecta'); return; }
-        if(data && data.status === 'ok'){
+      const callbackName = 'cb_admin_' + Math.random().toString(36).slice(2);
+      window[callbackName] = function(data){
+        if(data.status==='unauthorized'){ alert('Clave incorrecta'); return; }
+        if(data && data.status==='ok'){
           const registros = data.registros || [];
           let html = '<table><tr><th>Legajo</th><th>Apellido</th><th>Nombre</th><th>Total</th><th>Restante</th></tr>';
-          registros.forEach(r => {
-            const restante = Math.max(0, LIMITE_HORAS - Number(r.total || 0));
+          registros.forEach(r=>{
+            const restante = Math.max(0,LIMITE_HORAS - Number(r.total || 0));
             html += `<tr><td>${r.legajo}</td><td>${r.apellido}</td><td>${r.nombre}</td><td>${r.total}</td><td>${restante}</td></tr>`;
           });
           html += '</table>';
           document.getElementById('tabla-general').innerHTML = html;
-        } else {
-          alert('Respuesta inválida del servidor.');
-        }
-      } catch(err){
-        console.error(err);
-        alert('Error al obtener datos generales. Si ocurre por CORS, consulta configuración del GAS.');
-      }
+        } else alert('Respuesta inválida del servidor.');
+        delete window[callbackName]; script.remove();
+      };
+      const script = document.createElement('script');
+      script.src = `${WEB_APP_URL}?action=getAll&key=${encodeURIComponent(key)}&callback=${callbackName}`;
+      document.body.appendChild(script);
     }
 
-    // Inicial: mostrar inicio
     mostrarInicio();
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
