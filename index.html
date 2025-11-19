@@ -81,7 +81,7 @@
 
   <script>
     // ********* CONFIGURA ESTA URL con la URL /exec que te dará GAS tras desplegar *********
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyCMkWy0duUGrNLsVoQxomUypuwtk2bYU_jRXHuWJKodZaMmxYHCAMi4U0P1-bjsDs5/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx8hbRm3tUqYhNachseayPdqrD9e2_JkcaU9s4T_AAhydANablHOon-dIqgKVIdlCwcUg/exec";
 
     const LIMITE_HORAS = 40;
     let userLegajo = "";
@@ -173,7 +173,6 @@ async function registrarHoras(){
   if(horas <= 0){ alert('Horas inválidas.'); return; }
 
   try {
-    // intento POST normal
     const res = await fetch(WEB_APP_URL, {
       method:'POST',
       mode:'cors',
@@ -188,30 +187,11 @@ async function registrarHoras(){
       alert('Error: ' + (data.message || 'Respuesta inválida'));
     }
   } catch(err){
-    // fallback JSONP para evitar CORS
-    console.warn('POST CORS falló, usando JSONP', err);
-    const callbackName = 'cb_post_' + Math.random().toString(36).slice(2);
-    window[callbackName] = function(data){
-      if(data && data.status === 'ok'){ 
-        alert('Horas registradas correctamente (JSONP).'); 
-        obtenerDatosUsuario(); 
-      } else {
-        alert('Error al registrar horas (JSONP).');
-      }
-      delete window[callbackName]; script.remove();
-    };
-    const params = new URLSearchParams({
-      action:'registrar',
-      legajo: userLegajo,
-      apellido, nombre,
-      fecha, horas, lugar,
-      callback: callbackName
-    });
-    const script = document.createElement('script');
-    script.src = WEB_APP_URL + '?' + params.toString();
-    document.body.appendChild(script);
+    console.error(err);
+    alert('Error al registrar horas. Revisa la consola.');
   }
 }
+
 
 
     // Panel supervisor: GET all
@@ -245,6 +225,7 @@ async function registrarHoras(){
   </script>
 </body>
 </html>
+
 
 
 
