@@ -162,31 +162,57 @@
     }
 
     // Registrar horas: POST JSON
-    async function registrarHoras(){
-      const fecha = document.getElementById('fecha').value;
-      const horas = parseFloat(document.getElementById('horas').value);
-      const lugar = document.getElementById('lugar').value.trim();
-      const apellido = document.getElementById('apellido').value.trim();
-      const nombre = document.getElementById('nombre').value.trim();
+async function registrarHoras(){
+  const fecha = document.getElementById('fecha').value;
+  const horas = parseFloat(document.getElementById('horas').value);
+  const lugar = document.getElementById('lugar').value.trim();
+  const apellido = document.getElementById('apellido').value.trim();
+  const nombre = document.getElementById('nombre').value.trim();
 
-      if(!fecha || !horas || !lugar){ alert('Complete todos los campos.'); return; }
-      if(horas <= 0){ alert('Horas inválidas.'); return; }
+  if(!fecha || !horas || !lugar){ alert('Complete todos los campos.'); return; }
+  if(horas <= 0){ alert('Horas inválidas.'); return; }
 
-      try {
-        const res = await fetch(WEB_APP_URL, {
-          method:'POST',
-          mode:'cors',
-          headers: { 'Content-Type':'application/json' },
-          body: JSON.stringify({ action:'registrar', legajo: userLegajo, apellido, nombre, fecha, horas, lugar })
-        });
-        const data = await res.json();
-        if(data && data.status === 'ok'){ alert('Horas registradas correctamente.'); obtenerDatosUsuario(); }
-        else alert('Error: ' + (data.message || 'Respuesta inválida'));
-      } catch(err){
-        console.error(err);
-        alert('Error al registrar horas. Revisa la consola.');
-      }
+  try {
+    // intento POST normal
+    const res = await fetch(WEB_APP_URL, {
+      method:'POST',
+      mode:'cors',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ action:'registrar', legajo: userLegajo, apellido, nombre, fecha, horas, lugar })
+    });
+    const data = await res.json();
+    if(data && data.status === 'ok'){
+      alert('Horas registradas correctamente.');
+      obtenerDatosUsuario();
+    } else {
+      alert('Error: ' + (data.message || 'Respuesta inválida'));
     }
+  } catch(err){
+    // fallback JSONP para evitar CORS
+    console.warn('POST CORS falló, usando JSONP', err);
+    const callbackName = 'cb_post_' + Math.random().toString(36).slice(2);
+    window[callbackName] = function(data){
+      if(data && data.status === 'ok'){ 
+        alert('Horas registradas correctamente (JSONP).'); 
+        obtenerDatosUsuario(); 
+      } else {
+        alert('Error al registrar horas (JSONP).');
+      }
+      delete window[callbackName]; script.remove();
+    };
+    const params = new URLSearchParams({
+      action:'registrar',
+      legajo: userLegajo,
+      apellido, nombre,
+      fecha, horas, lugar,
+      callback: callbackName
+    });
+    const script = document.createElement('script');
+    script.src = WEB_APP_URL + '?' + params.toString();
+    document.body.appendChild(script);
+  }
+}
+
 
     // Panel supervisor: GET all
     async function verGeneral(){
@@ -219,6 +245,7 @@
   </script>
 </body>
 </html>
+
 
 
 
