@@ -1,5 +1,5 @@
 // js/main.js - Conexión real al Web App (GAS)
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz7mVrirCIK-XbKAqGw92YtnZ3fNvYm2LuwL1Mha7MJYsQNHyIkyncW9QgjJTe7N0IpyA/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycby70KqVussNOxUH5Y3A8fiyiv1S_xmMiNJrueaTzVxAGLzCMNPvOHOc9ySHXqR0GgqhSA/exec";
 
 async function api(action, payload){
   const url = GAS_URL + "?action=" + encodeURIComponent(action);
