@@ -18,17 +18,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderServices(res);
   });
 
-  document.getElementById("btn-add-suggest").addEventListener("click", async () => {
-    const text = document.getElementById("sup-suggest-text").value.trim();
-    if(!text) return alert("Escribí algo antes de enviar.");
-    const res = await api("suggestion", { token: auth.token, text });
+  // NUEVO HANDLER --- SUGERENCIA INDIVIDUAL
+  document.getElementById("sup-btn-send-suggestion").addEventListener("click", async () => {
+    const target = document.getElementById("sup-sug-legajo").value.trim();
+    const mensaje = document.getElementById("sup-sug-mensaje").value.trim();
+    if(!target || !mensaje) return alert("Completá legajo y mensaje.");
+
+    const res = await api("addSuggestion", { 
+      token: auth.token, 
+      target_legajo: target, 
+      mensaje 
+    });
+
     if(res.ok){
-      document.getElementById("sup-msg").textContent = "Sugerencia enviada.";
-      document.getElementById("sup-suggest-text").value = "";
+      document.getElementById("sup-sug-msg").textContent = "Sugerencia enviada.";
+      document.getElementById("sup-sug-mensaje").value = "";
     } else {
-      document.getElementById("sup-msg").textContent = "Error: " + (res.error||"sin detalle");
+      document.getElementById("sup-sug-msg").textContent = "Error: " + (res.error||"sin detalle");
     }
   });
+
+
+
 
   async function loadAll(){
     const res = await api("getAllServices", { token: auth.token });
