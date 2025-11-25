@@ -84,3 +84,45 @@ body{
   .container{grid-template-columns:1fr; padding:12px;}
   .logo{width:56px;height:56px}
 }
+
+
+
+/* Progreso de horas */
+.progress {
+  width: 100%;
+  height: 14px;
+  background: #e6eef9;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  margin-top:8px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  display:block;
+  border-radius: 10px;
+  transition: width 600ms ease;
+}
+
+/* Colores: IP azul oscuro, Cursos amarillo, Total rojo si supera 100% */
+.progress-bar.ip { background: var(--azul-oscuro); }
+.progress-bar.curso { background: var(--amarillo); }
+.progress-bar.total { background: linear-gradient(90deg,var(--azul-oscuro) 0%, #f97316 70%); }
+
+/* Label para valores */
+.progress-label {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:13px;
+  margin-top:6px;
+}
+
+/* Estado de alerta */
+.warning {
+  color: #b91c1c;
+  font-weight:600;
+}
+
