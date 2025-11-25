@@ -56,17 +56,32 @@
       </div>
     </section>
 
-    <section class="box">
-      <h3>Resumen mensual</h3>
-      <label>Año
-        <input id="res-year" type="number" min="2020" value="">
-      </label>
-      <label>Mes
-        <select id="res-month"></select>
-      </label>
-      <div class="actions"><button id="btn-get-summary">Ver resumen</button></div>
-      <div id="summary-output" style="margin-top:12px" class="small"></div>
-    </section>
+<section class="box">
+  <h3>Resumen mensual</h3>
+  <label>Año
+    <input id="res-year" type="number" min="2020" value="">
+  </label>
+  <label>Mes
+    <select id="res-month"></select>
+  </label>
+  <div class="actions"><button id="btn-get-summary">Ver resumen</button></div>
+
+  <!-- BARRAS DE PROGRESO -->
+  <div id="progress-container" style="margin-top:12px">
+    <div class="progress-label"><span>Horas IP</span><span id="label-ip">0 / 40 h</span></div>
+    <div class="progress"><span id="bar-ip" class="progress-bar ip" style="width:0%"></span></div>
+
+    <div class="progress-label" style="margin-top:10px;"><span>Horas Cursos</span><span id="label-curso">0 / 40 h</span></div>
+    <div class="progress"><span id="bar-curso" class="progress-bar curso" style="width:0%"></span></div>
+
+    <div class="progress-label" style="margin-top:10px;"><span>Total consumido</span><span id="label-total">0 / 40 h</span></div>
+    <div class="progress"><span id="bar-total" class="progress-bar total" style="width:0%"></span></div>
+  </div>
+
+  <!-- OUTPUT DE RESUMEN DETALLADO -->
+  <div id="summary-output" style="margin-top:12px" class="small"></div>
+</section>
+
 
     <section class="box" style="grid-column:1/-1">
       <h3>Mis servicios registrados</h3>
