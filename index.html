@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Control Horas IP - POLICÍA San Luis</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <img src="assets/logo.png" alt="Policía San Luis" class="logo"/>
+    <h1>Control Horas IP</h1>
+    <p class="subtitle">Registro y control de recargos y cursos — Policía Provincia de San Luis</p>
+  </header>
+
+  <main class="container">
+    <section class="box" id="auth-box">
+      <div class="tabs">
+        <button id="tab-login" class="active">Iniciar sesión</button>
+        <button id="tab-register">Registrarse</button>
+      </div>
+
+      <form id="form-login" class="form">
+        <label>Legajo
+          <input id="login-legajo" type="text" placeholder="Ej: 12345" />
+        </label>
+        <label>PIN
+          <input id="login-pin" type="password" maxlength="6" placeholder="Tu PIN" />
+        </label>
+        <div class="actions">
+          <button type="button" id="btn-login">Entrar</button>
+        </div>
+      </form>
+
+      <form id="form-register" class="form hidden">
+        <label>Legajo (ya asignado)
+          <input id="reg-legajo" type="text" placeholder="Ej: 12345" />
+        </label>
+        <label>Apellido
+          <input id="reg-apellido" type="text" />
+        </label>
+        <label>Nombre
+          <input id="reg-nombre" type="text" />
+        </label>
+        <label>Crear PIN (4-6 dígitos)
+          <input id="reg-pin" type="password" maxlength="6" placeholder="Crea un PIN" />
+        </label>
+        <label>Confirmar PIN
+          <input id="reg-pin2" type="password" maxlength="6" placeholder="Repite el PIN" />
+        </label>
+        <div class="actions">
+          <button type="button" id="btn-register">Crear cuenta</button>
+        </div>
+        <p class="small">Al registrarte el sistema requiere que completes todos los datos. El legajo debe existir (lo validaremos cuando conectemos el backend).</p>
+      </form>
+    </section>
+
+    <section class="box" id="instructions">
+      <h2>Instructivo rápido</h2>
+      <ol>
+        <li>Registrate con tu <strong>legajo</strong>, apellido, nombre y creá un PIN (4 a 6 dígitos).</li>
+        <li>Si ya estás registrado, usá Iniciar sesión con legajo + PIN.</li>
+        <li>La primera versión mostrará sólo formularios. Luego conectaremos Google Sheets para guardar datos.</li>
+      </ol>
+      <p class="small">Si volvés a la pantalla de inicio de sesión la sesión se cerrará automáticamente (al agregar backend esto cerrará el token).</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <small>App interna - Policía Provincia de San Luis</small>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
