@@ -1,8 +1,22 @@
-// js/main.js - Lógica mínima para alternar formularios y guardar token local (simulado).
-// Por ahora NO hace llamadas al backend; cuando tengamos GAS lo conectamos.
+// js/main.js - Conexión real al Web App (GAS)
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz7mVrirCIK-XbKAqGw92YtnZ3fNvYm2LuwL1Mha7MJYsQNHyIkyncW9QgjJTe7N0IpyA/exec";
+
+async function api(action, payload){
+  const url = GAS_URL + "?action=" + encodeURIComponent(action);
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch (err) {
+    return {ok:false, error: String(err)};
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Tabs
+  // Tabs same
   const tabLogin = document.getElementById("tab-login");
   const tabRegister = document.getElementById("tab-register");
   const formLogin = document.getElementById("form-login");
@@ -21,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formLogin.classList.add("hidden");
   });
 
-  // Botones
+  // Register with backend
   document.getElementById("btn-register").addEventListener("click", async () => {
     const legajo = document.getElementById("reg-legajo").value.trim();
     const apellido = document.getElementById("reg-apellido").value.trim();
@@ -29,51 +43,45 @@ document.addEventListener("DOMContentLoaded", () => {
     const pin = document.getElementById("reg-pin").value.trim();
     const pin2 = document.getElementById("reg-pin2").value.trim();
 
-    // Validaciones básicas
     if(!legajo || !apellido || !nombre || !pin || !pin2){
       return alert("Completa todos los campos para registrarte.");
     }
-    if(pin !== pin2){
-      return alert("Los PIN no coinciden.");
-    }
-    if(pin.length < 4 || pin.length > 6){
-      return alert("PIN: entre 4 y 6 dígitos.");
-    }
+    if(pin !== pin2) return alert("Los PIN no coinciden.");
+    if(pin.length < 4 || pin.length > 6) return alert("PIN: entre 4 y 6 dígitos.");
 
-    // Simulación de registro: guardamos en localStorage (temporal)
-    const user = {legajo, apellido, nombre, pin};
-    localStorage.setItem("mock_user_" + legajo, JSON.stringify(user));
-    alert("Registro simulado guardado en el navegador. Cuando conectemos el backend se validará en el servidor.");
-    // Cambiar a login
-    tabLogin.click();
-    document.getElementById("login-legajo").value = legajo;
+    const res = await api("register", {legajo, apellido, nombre, pin});
+    if(res.ok){
+      alert("Registro creado correctamente. Ahora iniciá sesión.");
+      tabLogin.click();
+      document.getElementById("login-legajo").value = legajo;
+    } else {
+      alert("Error: " + (res.error || "no info"));
+    }
   });
 
+  // Login with backend
   document.getElementById("btn-login").addEventListener("click", async () => {
     const legajo = document.getElementById("login-legajo").value.trim();
     const pin = document.getElementById("login-pin").value.trim();
-
     if(!legajo || !pin) return alert("Ingresa legajo y PIN.");
 
-    // Simulación de login:
-    const stored = localStorage.getItem("mock_user_" + legajo);
-    if(!stored){
-      return alert("Usuario no encontrado (esto es simulación). Primero registrate.");
+    const res = await api("login", {legajo, pin});
+    if(res.ok){
+      // Guardamos token
+      const tokenData = {legajo, token: res.token, role: res.role};
+      localStorage.setItem("auth_token", JSON.stringify(tokenData));
+      alert("Login OK. Redirigiendo...");
+      // Redirigir según rol (aún no creamos app.html/supervisor.html)
+      if(res.role === "supervisor"){
+        window.location.href = "supervisor.html";
+      } else {
+        window.location.href = "app.html";
+      }
+    } else {
+      alert("Login fallido: " + (res.error || "no info"));
     }
-    const user = JSON.parse(stored);
-    if(user.pin !== pin){
-      return alert("PIN incorrecto (simulación).");
-    }
-
-    // Guardamos token simple en localStorage
-    const tokenData = {legajo, nombre:user.nombre, apellido:user.apellido, role: "user", token: "local-" + Date.now()};
-    localStorage.setItem("auth_token", JSON.stringify(tokenData));
-    alert("Login simulado OK. Ahora irías a la interfaz principal.");
-    // En la próxima etapa crearemos app.html y supervisor.html y redireccionaremos.
-    // Por ahora sólo mostramos la info en consola:
-    console.log("Usuario logueado:", tokenData);
   });
 
-  // Al cargar index: limpiar sesión (requisito: "al volver a login se cierra sesión")
+  // Al cargar index: limpiar sesión (requisito)
   localStorage.removeItem("auth_token");
 });
