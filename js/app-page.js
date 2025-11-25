@@ -94,22 +94,71 @@ document.addEventListener("DOMContentLoaded", async () => {
     container.appendChild(t);
   }
 
-  // Summary
-  document.getElementById("btn-get-summary").addEventListener("click", async () => {
-    const a = getAuth();
-    const year = Number(document.getElementById("res-year").value);
-    const month = Number(document.getElementById("res-month").value);
-    const res = await api("getMonthlySummary", { token: a.token, legajo: a.legajo, year, month });
-    const out = document.getElementById("summary-output");
-    if(!res.ok) return out.textContent = "Error: " + (res.error||"sin detalle");
-    out.innerHTML = `
-      <strong>Año:</strong> ${res.year}  <strong>Mes:</strong> ${res.month} <br/>
-      <strong>Total IP:</strong> ${res.total_ip} h <br/>
-      <strong>Total Cursos:</strong> ${res.total_cursos} h <br/>
-      <strong>Recargo disponible:</strong> ${res.recargo_disponible} h <br/>
-      <strong>Detalle:</strong> ${JSON.stringify(res.detalle)}
-    `;
-  });
+// Summary con barras de progreso y totales
+document.getElementById("btn-get-summary").addEventListener("click", async () => {
+  const a = getAuth();
+  const year = Number(document.getElementById("res-year").value);
+  const month = Number(document.getElementById("res-month").value);
+  const out = document.getElementById("summary-output");
+  out.textContent = "Cargando...";
+  const res = await api("getMonthlySummary", { token: a.token, legajo: a.legajo, year, month });
+  if(!res.ok){
+    out.textContent = "Error: " + (res.error||"sin detalle");
+    return;
+  }
+
+  // Totales desde backend
+  const total_ip = Number(res.total_ip || 0);
+  const total_cursos = Number(res.total_cursos || 0);
+  const total_consumed = Number(res.total_consumed || (total_ip + total_cursos));
+  const course_allocation = Number(res.course_allocation || 0);
+  const course_excess = Number(res.course_excess || Math.max(0, total_cursos - course_allocation));
+  const recargo_disponible = Number(res.recargo_disponible || Math.max(0, 40 - total_consumed));
+
+  // Mostrar texto con totales
+  out.innerHTML = `
+    <strong>Año:</strong> ${res.year}  <strong>Mes:</strong> ${res.month} <br/>
+    <strong>Total IP:</strong> ${total_ip} h <br/>
+    <strong>Total Cursos:</strong> ${total_cursos} h (curso asignado: ${course_allocation} h, excedente: ${course_excess} h) <br/>
+    <strong>Total consumido:</strong> ${total_consumed} h <br/>
+    <strong>Recargo disponible:</strong> ${recargo_disponible} h <br/>
+    <strong>Detalle:</strong> ${JSON.stringify(res.detalle)}
+  `;
+
+  // Actualizar barras de progreso (base = 40 h)
+  const base = 40;
+  const pctIp = Math.min(100, (total_ip / base) * 100);
+  const pctCurso = Math.min(100, (total_cursos / base) * 100);
+  const pctTotal = Math.min(100, (total_consumed / base) * 100);
+
+  // Labels
+  document.getElementById("label-ip").textContent = `${total_ip} / ${base} h`;
+  document.getElementById("label-curso").textContent = `${total_cursos} / ${base} h`;
+  document.getElementById("label-total").textContent = `${total_consumed} / ${base} h`;
+
+  // Bars
+  const barIp = document.getElementById("bar-ip");
+  const barCurso = document.getElementById("bar-curso");
+  const barTotal = document.getElementById("bar-total");
+
+  // establecer anchos (animación CSS)
+  barIp.style.width = pctIp + "%";
+  barCurso.style.width = pctCurso + "%";
+  barTotal.style.width = pctTotal + "%";
+
+  // Indicador visual de alerta si se supera o queda en 0 recargo disponible
+  if(recargo_disponible <= 0){
+    // resaltamos el texto del recargo
+    out.querySelector("strong:nth-of-type(5)").classList?.add?.("warning");
+    // y mostramos nota
+    const note = document.createElement("div");
+    note.className = "warning";
+    note.style.marginTop = "8px";
+    note.textContent = "ATENCIÓN: Se superó o se completó el cupo mensual de 40 horas.";
+    out.appendChild(note);
+  }
+});
+
 
   // Inicial carga
   loadServices();
