@@ -32,14 +32,24 @@
       <div id="sup-services" class="small"></div>
     </section>
 
-    <section class="box">
-      <h3>Agregar sugerencia / nota (auditoría)</h3>
-      <label>Texto
-        <input id="sup-suggest-text" type="text" placeholder="Idea, observación o nota" />
-      </label>
-      <div class="actions"><button id="btn-add-suggest">Enviar sugerencia</button></div>
-      <div id="sup-msg" class="small"></div>
-    </section>
+<section class="box">
+  <h3>Enviar sugerencia a usuario</h3>
+
+  <label>Legajo destinatario
+    <input id="sup-sug-legajo" type="text" placeholder="Ej: 12345" />
+  </label>
+
+  <label>Mensaje
+    <textarea id="sup-sug-mensaje" placeholder="Escribí la sugerencia..."></textarea>
+  </label>
+
+  <div class="actions">
+    <button id="sup-btn-send-suggestion">Enviar sugerencia</button>
+  </div>
+
+  <div id="sup-sug-msg" class="small"></div>
+</section>
+
   </main>
 
   <footer class="footer"><small>Policía Provincia de San Luis — Control Horas IP</small></footer>
