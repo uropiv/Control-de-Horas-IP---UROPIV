@@ -3,17 +3,35 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycby70KqVussNOxUH5Y3A8fiy
 
 async function api(action, payload){
   const url = GAS_URL + "?action=" + encodeURIComponent(action);
+
+  // Construimos URLSearchParams (convierte todo a strings)
+  const body = new URLSearchParams();
+  // incluimos la action en el body también por seguridad (no obligatorio)
+  body.append("action", action);
+  for (const k in payload){
+    if(payload[k] === undefined || payload[k] === null) continue;
+    // Si es objeto, lo pasamos a string JSON
+    if(typeof payload[k] === "object"){
+      body.append(k, JSON.stringify(payload[k]));
+    } else {
+      body.append(k, String(payload[k]));
+    }
+  }
+
   try {
     const res = await fetch(url, {
       method: "POST",
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+      // Este Content-Type es uno "simple" y evita preflight
+      headers: {'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+      body: body.toString()
     });
+    // Respuesta viene como JSON (Apps Script devuelve JSON)
     return await res.json();
   } catch (err) {
     return {ok:false, error: String(err)};
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   // Tabs same
