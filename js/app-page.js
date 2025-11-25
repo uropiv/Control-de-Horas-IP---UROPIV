@@ -162,4 +162,58 @@ document.getElementById("btn-get-summary").addEventListener("click", async () =>
 
   // Inicial carga
   loadServices();
+  
+  // 🔹 Cargar sugerencias al iniciar
+  loadSuggestions();
 });
+
+
+
+//Función para cargar sugerencias
+async function loadSuggestions(){
+  const a = getAuth();
+  const out = document.getElementById("user-suggestions");
+  out.textContent = "Cargando...";
+
+  const res = await api("getUserSuggestions", { token: a.token });
+
+  if(!res.ok) return out.textContent = "Error: " + (res.error||"sin detalle");
+  if(!res.suggestions || res.suggestions.length === 0)
+    return out.textContent = "No tenés sugerencias.";
+
+  out.innerHTML = "";
+
+  res.suggestions.forEach(s=>{
+    const div = document.createElement("div");
+    div.className = "suggestion-item";
+    div.style.borderBottom = "1px solid #eee";
+    div.style.padding = "8px 0";
+
+    const seen = s.visto_por_target
+      ? `(Leída: ${s.visto_at ? new Date(s.visto_at).toLocaleString() : ""})`
+      : `<button data-row="${s.rowIndex}" class="mark-read-btn">Marcar leída</button>`;
+
+    div.innerHTML = `
+      <strong>De:</strong> ${s.nombre_autor} ${s.apellido_autor} (${s.legajo_autor})
+      — <em>${new Date(s.timestamp).toLocaleString()}</em><br/>
+      <div style="margin-top:6px">${s.mensaje}</div>
+      <div style="margin-top:6px" class="small">${seen}</div>
+    `;
+    out.appendChild(div);
+  });
+}
+// B — Delegado para botones "Marcar leída"
+document.addEventListener("click", async (e) => {
+  if(e.target.classList.contains("mark-read-btn")){
+    const row = e.target.dataset.row;
+    const a = getAuth();
+    const res = await api("markSuggestionRead", { token: a.token, rowIndex: row });
+
+    if(res.ok){
+      loadSuggestions();
+    } else {
+      alert("Error: " + (res.error||"sin detalle"));
+    }
+  }
+});
+
