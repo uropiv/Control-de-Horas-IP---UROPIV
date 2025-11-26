@@ -1,6 +1,6 @@
 // js/app-common.js
 // Reemplaza la URL por tu Web App URL
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxeXOyUqNYf2k840x-f-f9ziuxSkIXlkt3hw_Vxb3DNIQrSAnz62bYWixQL-ME0DVRxOg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxyI_z7ExGUn-McHbLcmrxx-Sw0RFhVRxtEiw6EVEFcrPTkyvHVsCbDnOT35dugDBeyNw/exec";
 
 // Función que envía application/x-www-form-urlencoded para evitar CORS preflight
 async function api(action, payload = {}){
