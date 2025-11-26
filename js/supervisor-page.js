@@ -72,58 +72,69 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // --- PEGAR AQUÍ EL CÓDIGO DE SUGERENCIAS ---
 
-  document.getElementById("btn-load-suggestions").addEventListener("click", loadSuggestions);
+  // --- SUGERENCIAS: cargar y renderizar para supervisor ---
 
+  // Conectar botón
+  const btnLoadSugs = document.getElementById("btn-load-suggestions");
+  if(btnLoadSugs) btnLoadSugs.addEventListener("click", loadSuggestions);
+
+  // Cargar sugerencias (llama al backend)
   async function loadSuggestions(){
     const res = await api("getSuggestions", { token: auth.token });
     renderSuggestions(res);
   }
 
+  // Renderizar sugerencias en la tabla (usa la forma que devuelve tu GAS)
   function renderSuggestions(res){
     const c = document.getElementById("sup-suggestions");
     c.innerHTML = "";
 
+    if(!res){
+      c.textContent = "Error: respuesta vacía del servidor.";
+      return;
+    }
     if(!res.ok){
-      c.textContent = "Error: " + (res.error || "sin detalle");
+      c.textContent = "Error al cargar sugerencias: " + (res.error || "sin detalle");
       return;
     }
 
-    if(!res.sugs || res.sugs.length === 0){
+    const list = res.suggestions || [];
+    if(list.length === 0){
       c.textContent = "No hay sugerencias enviadas.";
       return;
     }
 
     const t = document.createElement("table");
     t.style.width = "100%";
-    t.innerHTML = `
-      <thead>
-        <tr style="text-align:left">
-          <th>ID</th>
-          <th>Legajo Destino</th>
-          <th>Mensaje</th>
-          <th>Fecha</th>
-          <th>Leído</th>
-        </tr>
-      </thead>
-    `;
-
+    t.innerHTML = `<thead>
+      <tr style="text-align:left">
+        <th>#</th><th>Legajo destino</th><th>Mensaje</th><th>Fecha</th><th>Estado</th>
+      </tr>
+    </thead>`;
     const body = document.createElement("tbody");
 
-    res.sugs.forEach(s => {
+    list.forEach((s, idx) => {
+      const fecha = s.timestamp ? (new Date(s.timestamp)).toLocaleString() : "";
+      const estado = s.visto_por_target ? `✔️ LEÍDO${ s.visto_at ? (" (" + new Date(s.visto_at).toLocaleString() + ")") : "" }` : "❌ NO LEÍDO";
+      const idCell = s.rowIndex || (idx+1);
+      // sanitizar mensaje para evitar inyección simple
+      const mensaje = (s.mensaje || "").toString().replace(/</g,"&lt;").replace(/>/g,"&gt;");
       const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${s.id}</td>
-        <td>${s.target_legajo}</td>
-        <td>${s.mensaje}</td>
-        <td>${new Date(s.fecha).toLocaleString()}</td>
-        <td>${s.leido ? "✔️ LEÍDO" : "❌ NO LEÍDO"}</td>
-      `;
+      tr.innerHTML = `<td style="padding:6px;border-top:1px solid #eee">${idCell}</td>
+                      <td style="padding:6px;border-top:1px solid #eee">${s.target_legajo || ""}</td>
+                      <td style="padding:6px;border-top:1px solid #eee">${mensaje}</td>
+                      <td style="padding:6px;border-top:1px solid #eee">${fecha}</td>
+                      <td style="padding:6px;border-top:1px solid #eee">${estado}</td>`;
       body.appendChild(tr);
     });
 
     t.appendChild(body);
     c.appendChild(t);
   }
+
+  // (opcional) auto-load al abrir:
+    loadSuggestions();
+
 
   // carga inicial
   loadAll();
