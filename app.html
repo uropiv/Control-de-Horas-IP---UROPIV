@@ -19,41 +19,60 @@
     <section class="box">
       <h2>Bienvenido <span id="user-name">Usuario</span></h2>
       <p class="small">Legajo: <strong id="user-legajo"></strong></p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <div style="flex:1;min-width:260px">
-          <h3>Registrar Horas IP (recargos)</h3>
-          <label>Subtipo (Vialidad/Banco/Cancha/otro)
-            <input id="ip-subtipo" type="text" placeholder="Ej: Vialidad" />
-          </label>
-          <label>Fecha
-            <input id="ip-fecha" type="date" />
-          </label>
-          <label>Horas
-            <input id="ip-horas" type="number" min="0" step="0.5" value="4" />
-          </label>
-          <label>Observaciones
-            <input id="ip-obs" type="text" />
-          </label>
-          <div class="actions"><button id="btn-add-ip">Agregar Horas IP</button></div>
-        </div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+  <!-- ---------- PANEL: Horas IP (recargos) ---------- -->
+  <div style="flex:1;min-width:260px">
+    <h3>Registrar Horas IP (recargos)</h3>
 
-        <div style="flex:1;min-width:260px">
-          <h3>Registrar Curso / Capacitación</h3>
-          <label>Nombre del Curso
-            <input id="curso-subtipo" type="text" placeholder="Ej: RCP avanzado" />
-          </label>
-          <label>Fecha
-            <input id="curso-fecha" type="date" />
-          </label>
-          <label>Horas
-            <input id="curso-horas" type="number" min="0" step="0.5" value="4" />
-          </label>
-          <label>Observaciones
-            <input id="curso-obs" type="text" />
-          </label>
-          <div class="actions"><button id="btn-add-curso">Agregar Curso</button></div>
-        </div>
-      </div>
+    <label for="ip-subtipo">Subtipo (lugar / servicio)
+      <input id="ip-subtipo" type="text" placeholder="Ej: Vialidad / Banco / Cancha" />
+    </label>
+
+    <label for="ip-fecha">Fecha del servicio
+      <input id="ip-fecha" type="date" />
+    </label>
+
+    <label for="ip-horas">Cantidad de horas
+      <input id="ip-horas" type="number" min="0" step="0.5" value="4" />
+    </label>
+
+    <label for="ip-obs">Observaciones
+      <input id="ip-obs" type="text" placeholder="Opcional: datos relevantes (ej: turno noche)" />
+    </label>
+
+    <div class="actions">
+      <button id="btn-add-ip">Agregar Horas IP</button>
+    </div>
+    <div id="msg-add-ip" class="small" aria-live="polite"></div>
+  </div>
+
+  <!-- ---------- PANEL: Cursos / Capacitaciones ---------- -->
+  <div style="flex:1;min-width:260px">
+    <h3>Registrar Curso / Capacitación</h3>
+
+    <label for="curso-subtipo">Nombre del curso / actividad
+      <input id="curso-subtipo" type="text" placeholder="Ej: RCP avanzado / Manejo defensivo" />
+    </label>
+
+    <label for="curso-fecha">Fecha del curso
+      <input id="curso-fecha" type="date" />
+    </label>
+
+    <label for="curso-horas">Cantidad de horas
+      <input id="curso-horas" type="number" min="0" step="0.5" value="4" />
+    </label>
+
+    <label for="curso-obs">Observaciones
+      <input id="curso-obs" type="text" placeholder="Opcional: lugar, entidad, matrícula" />
+    </label>
+
+    <div class="actions">
+      <button id="btn-add-curso">Agregar Curso</button>
+    </div>
+    <div id="msg-add-curso" class="small" aria-live="polite"></div>
+  </div>
+</div>
+
     </section>
 
 <section class="box">
