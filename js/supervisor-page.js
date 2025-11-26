@@ -70,6 +70,61 @@ document.addEventListener("DOMContentLoaded", async () => {
     c.appendChild(t);
   }
 
+  // --- PEGAR AQUÍ EL CÓDIGO DE SUGERENCIAS ---
+
+  document.getElementById("btn-load-suggestions").addEventListener("click", loadSuggestions);
+
+  async function loadSuggestions(){
+    const res = await api("getSuggestions", { token: auth.token });
+    renderSuggestions(res);
+  }
+
+  function renderSuggestions(res){
+    const c = document.getElementById("sup-suggestions");
+    c.innerHTML = "";
+
+    if(!res.ok){
+      c.textContent = "Error: " + (res.error || "sin detalle");
+      return;
+    }
+
+    if(!res.sugs || res.sugs.length === 0){
+      c.textContent = "No hay sugerencias enviadas.";
+      return;
+    }
+
+    const t = document.createElement("table");
+    t.style.width = "100%";
+    t.innerHTML = `
+      <thead>
+        <tr style="text-align:left">
+          <th>ID</th>
+          <th>Legajo Destino</th>
+          <th>Mensaje</th>
+          <th>Fecha</th>
+          <th>Leído</th>
+        </tr>
+      </thead>
+    `;
+
+    const body = document.createElement("tbody");
+
+    res.sugs.forEach(s => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${s.id}</td>
+        <td>${s.target_legajo}</td>
+        <td>${s.mensaje}</td>
+        <td>${new Date(s.fecha).toLocaleString()}</td>
+        <td>${s.leido ? "✔️ LEÍDO" : "❌ NO LEÍDO"}</td>
+      `;
+      body.appendChild(tr);
+    });
+
+    t.appendChild(body);
+    c.appendChild(t);
+  }
+
   // carga inicial
   loadAll();
 });
