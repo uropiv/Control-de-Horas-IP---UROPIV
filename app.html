@@ -20,53 +20,85 @@
       <h2>Bienvenido <span id="user-name">Usuario</span></h2>
       <p class="small">Legajo: <strong id="user-legajo"></strong></p>
 <div style="display:flex;gap:10px;flex-wrap:wrap">
-<!-- ===================================================== -->
-<!-- ===============   REGISTRAR HORAS IP   =============== -->
-<!-- ===================================================== -->
+  // Add IP (reemplazar handler antiguo)
+  document.getElementById("btn-add-ip").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-add-ip");
+    btn.disabled = true;
+    const subtipo = document.getElementById("ip-subtipo").value.trim();
+    const fecha = document.getElementById("ip-fecha").value;
+    const horas = Number(document.getElementById("ip-horas").value) || 0;
+    const obs = document.getElementById("ip-obs").value.trim();
+    const outMsg = document.getElementById("msg-add-ip");
 
-<section class="box-section">
-  <h2 class="box-title">Registrar Horas IP (Recargos)</h2>
+    outMsg.textContent = "";
+    if(!fecha || horas <= 0){
+      outMsg.textContent = "Completa fecha y horas correctamente.";
+      btn.disabled = false;
+      return;
+    }
 
-  <label class="input-label">Subtipo (lugar / servicio)</label>
-  <input id="ip-subtipo" class="input-text" placeholder="Ej: Vialidad / Banco / Cancha">
+    try{
+      const a = getAuth();
+      const res = await api("addService", { token: a.token, legajo: a.legajo, tipo: "IP", subtipo, fecha, horas, observaciones: obs, device: "web" });
+      if(res.ok){
+        outMsg.textContent = "Horas IP registradas correctamente.";
+        // limpiar campos
+        document.getElementById("ip-subtipo").value = "";
+        document.getElementById("ip-horas").value = "4";
+        document.getElementById("ip-obs").value = "";
+        // recargar servicios y resumen
+        await loadServices();
+        // actualizar resumen automáticamente (si lo querés): descomenta la siguiente línea
+        // document.getElementById("btn-get-summary").click();
+      } else {
+        outMsg.textContent = "Error al registrar: " + (res.error || "sin detalle");
+      }
+    }catch(err){
+      outMsg.textContent = "Error de conexión: " + String(err);
+    } finally {
+      btn.disabled = false;
+    }
+  });
 
-  <label class="input-label">Fecha del servicio</label>
-  <input type="date" id="ip-fecha" class="input-text">
+  // Add Curso (reemplazar handler antiguo)
+  document.getElementById("btn-add-curso").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-add-curso");
+    btn.disabled = true;
+    const subtipo = document.getElementById("curso-subtipo").value.trim();
+    const fecha = document.getElementById("curso-fecha").value;
+    const horas = Number(document.getElementById("curso-horas").value) || 0;
+    const obs = document.getElementById("curso-obs").value.trim();
+    const outMsg = document.getElementById("msg-add-curso");
 
-  <label class="input-label">Cantidad de horas</label>
-  <input id="ip-horas" class="input-text" type="number" value="4" min="1">
+    outMsg.textContent = "";
+    if(!fecha || horas <= 0){
+      outMsg.textContent = "Completa fecha y horas correctamente.";
+      btn.disabled = false;
+      return;
+    }
 
-  <label class="input-label">Observaciones</label>
-  <textarea id="ip-obs" class="input-text" placeholder="Opcional: datos relevantes (ej: turno noche)"></textarea>
-
-  <button id="btn-add-ip" class="btn-primary">Agregar Horas IP</button>
-  <p id="msg-add-ip" class="box-msg"></p>
-</section>
-
-
-<!-- ===================================================== -->
-<!-- ==========   REGISTRAR CURSO / CAPACITACIÓN   ======== -->
-<!-- ===================================================== -->
-
-<section class="box-section">
-  <h2 class="box-title">Registrar Curso / Capacitación</h2>
-
-  <label class="input-label">Nombre del curso / actividad</label>
-  <input id="curso-subtipo" class="input-text" placeholder="Ej: RCP avanzado / Manejo defensivo">
-
-  <label class="input-label">Fecha del curso</label>
-  <input type="date" id="curso-fecha" class="input-text">
-
-  <label class="input-label">Cantidad de horas</label>
-  <input id="curso-horas" class="input-text" type="number" value="4" min="1">
-
-  <label class="input-label">Observaciones</label>
-  <textarea id="curso-obs" class="input-text" placeholder="Opcional: lugar, entidad, matrícula"></textarea>
-
-  <button id="btn-add-curso" class="btn-primary">Agregar Curso</button>
-  <p id="msg-add-curso" class="box-msg"></p>
-</section>
-
+    try{
+      const a = getAuth();
+      const res = await api("addService", { token: a.token, legajo: a.legajo, tipo: "CURSO", subtipo, fecha, horas, observaciones: obs, device: "web" });
+      if(res.ok){
+        outMsg.textContent = "Curso registrado correctamente.";
+        // limpiar campos
+        document.getElementById("curso-subtipo").value = "";
+        document.getElementById("curso-horas").value = "4";
+        document.getElementById("curso-obs").value = "";
+        // recargar servicios y resumen
+        await loadServices();
+        // actualizar resumen automáticamente (si lo querés): descomenta la siguiente línea
+        // document.getElementById("btn-get-summary").click();
+      } else {
+        outMsg.textContent = "Error al registrar: " + (res.error || "sin detalle");
+      }
+    }catch(err){
+      outMsg.textContent = "Error de conexión: " + String(err);
+    } finally {
+      btn.disabled = false;
+    }
+  });
 
     </section>
 
