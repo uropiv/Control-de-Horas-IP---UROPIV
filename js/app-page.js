@@ -30,41 +30,86 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("res-year").value = new Date().getFullYear();
   monthSelect.value = new Date().getMonth()+1;
 
-  // Add IP
+  // Add IP (reemplazar handler antiguo)
   document.getElementById("btn-add-ip").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-add-ip");
+    btn.disabled = true;
     const subtipo = document.getElementById("ip-subtipo").value.trim();
     const fecha = document.getElementById("ip-fecha").value;
     const horas = Number(document.getElementById("ip-horas").value) || 0;
     const obs = document.getElementById("ip-obs").value.trim();
-    if(!fecha || horas <= 0) return alert("Completa fecha y horas.");
+    const outMsg = document.getElementById("msg-add-ip");
 
-    const a = getAuth();
-    const res = await api("addService", { token: a.token, legajo: a.legajo, tipo: "IP", subtipo, fecha, horas, observaciones: obs, device: "web" });
-    if(res.ok){
-      alert("Horas IP registradas.");
-      loadServices();
-    } else {
-      alert("Error: " + (res.error||"sin detalle"));
+    outMsg.textContent = "";
+    if(!fecha || horas <= 0){
+      outMsg.textContent = "Completa fecha y horas correctamente.";
+      btn.disabled = false;
+      return;
+    }
+
+    try{
+      const a = getAuth();
+      const res = await api("addService", { token: a.token, legajo: a.legajo, tipo: "IP", subtipo, fecha, horas, observaciones: obs, device: "web" });
+      if(res.ok){
+        outMsg.textContent = "Horas IP registradas correctamente.";
+        // limpiar campos
+        document.getElementById("ip-subtipo").value = "";
+        document.getElementById("ip-horas").value = "4";
+        document.getElementById("ip-obs").value = "";
+        // recargar servicios y resumen
+        await loadServices();
+        // actualizar resumen automáticamente (si lo querés): descomenta la siguiente línea
+        // document.getElementById("btn-get-summary").click();
+      } else {
+        outMsg.textContent = "Error al registrar: " + (res.error || "sin detalle");
+      }
+    }catch(err){
+      outMsg.textContent = "Error de conexión: " + String(err);
+    } finally {
+      btn.disabled = false;
     }
   });
 
-  // Add Curso
+  // Add Curso (reemplazar handler antiguo)
   document.getElementById("btn-add-curso").addEventListener("click", async () => {
+    const btn = document.getElementById("btn-add-curso");
+    btn.disabled = true;
     const subtipo = document.getElementById("curso-subtipo").value.trim();
     const fecha = document.getElementById("curso-fecha").value;
     const horas = Number(document.getElementById("curso-horas").value) || 0;
     const obs = document.getElementById("curso-obs").value.trim();
-    if(!fecha || horas <= 0) return alert("Completa fecha y horas.");
+    const outMsg = document.getElementById("msg-add-curso");
 
-    const a = getAuth();
-    const res = await api("addService", { token: a.token, legajo: a.legajo, tipo: "CURSO", subtipo, fecha, horas, observaciones: obs, device: "web" });
-    if(res.ok){
-      alert("Curso registrado.");
-      loadServices();
-    } else {
-      alert("Error: " + (res.error||"sin detalle"));
+    outMsg.textContent = "";
+    if(!fecha || horas <= 0){
+      outMsg.textContent = "Completa fecha y horas correctamente.";
+      btn.disabled = false;
+      return;
+    }
+
+    try{
+      const a = getAuth();
+      const res = await api("addService", { token: a.token, legajo: a.legajo, tipo: "CURSO", subtipo, fecha, horas, observaciones: obs, device: "web" });
+      if(res.ok){
+        outMsg.textContent = "Curso registrado correctamente.";
+        // limpiar campos
+        document.getElementById("curso-subtipo").value = "";
+        document.getElementById("curso-horas").value = "4";
+        document.getElementById("curso-obs").value = "";
+        // recargar servicios y resumen
+        await loadServices();
+        // actualizar resumen automáticamente (si lo querés): descomenta la siguiente línea
+        // document.getElementById("btn-get-summary").click();
+      } else {
+        outMsg.textContent = "Error al registrar: " + (res.error || "sin detalle");
+      }
+    }catch(err){
+      outMsg.textContent = "Error de conexión: " + String(err);
+    } finally {
+      btn.disabled = false;
     }
   });
+
 
   // Load user's services
   async function loadServices(){
