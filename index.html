@@ -51,18 +51,61 @@
         <div class="actions">
           <button type="button" id="btn-register">Crear cuenta</button>
         </div>
-        <p class="small">Al registrarte el sistema requiere que completes todos los datos. El legajo debe existir (lo validaremos cuando conectemos el backend).</p>
+        <p class="small">Al registrarte el sistema requiere que completes todos los datos.</p>
       </form>
     </section>
 
+    <!-- 🔥 NUEVO INSTRUCTIVO ACTUALIZADO 🔥 -->
     <section class="box" id="instructions">
       <h2>Instructivo rápido</h2>
-      <ol>
-        <li>Registrate con tu <strong>legajo</strong>, apellido, nombre y creá un PIN (4 a 6 dígitos).</li>
-        <li>Si ya estás registrado, usá Iniciar sesión con legajo + PIN.</li>
-        <li>La primera versión mostrará sólo formularios. Luego conectaremos Google Sheets para guardar datos.</li>
-      </ol>
-      <p class="small">Si volvés a la pantalla de inicio de sesión la sesión se cerrará automáticamente (al agregar backend esto cerrará el token).</p>
+
+      <h3>🔐 1. Registro de usuario</h3>
+      <ul>
+        <li>Ingresá tu <strong>legajo</strong>, <strong>apellido</strong>, <strong>nombre</strong> y creá un <strong>PIN</strong> de 4 a 6 dígitos.</li>
+        <li>El PIN funciona como tu clave personal para ingresar.</li>
+      </ul>
+
+      <h3>➡️ 2. Inicio de sesión</h3>
+      <ul>
+        <li>Accedé usando <strong>Legajo + PIN</strong>.</li>
+        <li>Si regresás a la pantalla inicial, tu sesión se cerrará automáticamente.</li>
+      </ul>
+
+      <h3>📝 3. Carga de Horas IP (Recargos)</h3>
+      <ul>
+        <li>Seleccioná el <strong>subtipo</strong> correspondiente.</li>
+        <li>Ingresá la <strong>fecha</strong> del servicio.</li>
+        <li>Cargá la <strong>cantidad de horas</strong>.</li>
+        <li>Completá las <strong>observaciones</strong> si corresponde.</li>
+      </ul>
+
+      <h3>🎓 4. Carga de Cursos / Capacitaciones</h3>
+      <ul>
+        <li>Indicá el <strong>curso</strong> o actividad realizada.</li>
+        <li>Cargá <strong>fecha</strong>, <strong>horas</strong> y <strong>observaciones</strong>.</li>
+      </ul>
+
+      <h3>📊 5. Consultar tus servicios cargados</h3>
+      <ul>
+        <li>Podés ver todos tus recargos y cursos ya registrados.</li>
+        <li>Las fechas se muestran exactamente como las ingresaste.</li>
+      </ul>
+
+      <h3>📨 6. Sugerencias del supervisor</h3>
+      <ul>
+        <li>Si recibís una sugerencia, aparecerá en tu panel.</li>
+        <li>Al abrirla se marcará automáticamente como <strong>LEÍDA</strong>.</li>
+      </ul>
+
+      <h3>🛠️ 7. Panel Supervisor (según rol)</h3>
+      <ul>
+        <li>Consultar todos los servicios del personal.</li>
+        <li>Buscar por legajo.</li>
+        <li>Enviar sugerencias individuales.</li>
+        <li>Ver si fueron leídas y cuándo.</li>
+      </ul>
+
+      <p class="small"><strong>Nota:</strong> Todos los datos se almacenan en Google Sheets y se sincronizan automáticamente.</p>
     </section>
   </main>
 
