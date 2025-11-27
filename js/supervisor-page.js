@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                       <td style="padding:6px;border-top:1px solid #eee">${s.legajo}</td>
                       <td style="padding:6px;border-top:1px solid #eee">${s.tipo}</td>
                       <td style="padding:6px;border-top:1px solid #eee">${s.subtipo || ""}</td>
-                      <td style="padding:6px;border-top:1px solid #eee">${(new Date(s.fecha)).toLocaleDateString()}</td>
+                      <td style="...">${s.fecha_display || s.fecha_iso || (s.fecha ? (new Date(s.fecha)).toLocaleDateString() : "")}</td>
                       <td style="padding:6px;border-top:1px solid #eee">${s.horas}</td>
                       <td style="padding:6px;border-top:1px solid #eee">${s.observaciones || ""}</td>`;
       body.appendChild(tr);
