@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const auth = requireAuth(true);
   if(!auth) return;
 
-  const state = { pendingDeleteId: null };
+  const state = { pendingDeleteId: null, deletingService: false };
   const userSuggestionsEl = document.getElementById("user-suggestions");
   const servicesListEl = document.getElementById("services-list");
   const summaryOutputEl = document.getElementById("summary-output");
@@ -49,8 +49,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           <textarea id="delete-reason-input" maxlength="300" placeholder="Ej: carga duplicada, error de fecha, etc."></textarea>
         </label>
         <div id="delete-reason-error" class="small warning hidden"></div>
+        <div id="delete-reason-loading" class="small hidden">Procesando eliminacion...</div>
         <div class="actions" style="margin-top:10px">
-          <button id="delete-cancel-btn" type="button">Cancelar</button>
+          <button id="delete-cancel-btn" type="button" class="secondary-btn">Cancelar</button>
           <button id="delete-confirm-btn" type="button" class="delete-service-btn">Confirmar eliminacion</button>
         </div>
       </div>
@@ -65,43 +66,80 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function openDeleteModal(serviceId){
+    if(state.deletingService) return;
     state.pendingDeleteId = serviceId;
     ensureDeleteModal();
     const modal = document.getElementById("delete-service-modal");
     const input = document.getElementById("delete-reason-input");
     const error = document.getElementById("delete-reason-error");
+    const loading = document.getElementById("delete-reason-loading");
+    const confirmBtn = document.getElementById("delete-confirm-btn");
+    const cancelBtn = document.getElementById("delete-cancel-btn");
     input.value = "";
     error.textContent = "";
     error.classList.add("hidden");
+    loading.classList.add("hidden");
+    confirmBtn.disabled = false;
+    confirmBtn.textContent = "Confirmar eliminacion";
+    cancelBtn.disabled = false;
+    input.disabled = false;
     modal.classList.remove("hidden");
     input.focus();
   }
 
   function closeDeleteModal(){
+    if(state.deletingService) return;
     const modal = document.getElementById("delete-service-modal");
     if(modal) modal.classList.add("hidden");
     state.pendingDeleteId = null;
   }
 
   async function confirmDeleteService(){
+    if(state.deletingService) return;
     const serviceId = state.pendingDeleteId;
     const input = document.getElementById("delete-reason-input");
     const error = document.getElementById("delete-reason-error");
+    const loading = document.getElementById("delete-reason-loading");
+    const confirmBtn = document.getElementById("delete-confirm-btn");
+    const cancelBtn = document.getElementById("delete-cancel-btn");
     const reason = (input.value || "").trim();
+    if(!reason){
+      error.textContent = "Debes colocar un motivo para eliminar.";
+      error.classList.remove("hidden");
+      return;
+    }
     if(reason.length < 5){
-      error.textContent = "Debes ingresar un motivo valido (minimo 5 caracteres).";
+      error.textContent = "El motivo debe tener al menos 5 caracteres.";
       error.classList.remove("hidden");
       return;
     }
-    const res = await api("deleteService", { token: auth.token, id: serviceId, reason });
-    if(!res.ok){
-      error.textContent = "No se pudo eliminar: " + (res.error || "sin detalle");
-      error.classList.remove("hidden");
-      return;
+    state.deletingService = true;
+    error.classList.add("hidden");
+    loading.classList.remove("hidden");
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = "Eliminando...";
+    cancelBtn.disabled = true;
+    input.disabled = true;
+
+    try {
+      const res = await api("deleteService", { token: auth.token, id: serviceId, reason });
+      if(!res.ok){
+        error.textContent = "No se pudo eliminar: " + (res.error || "sin detalle");
+        error.classList.remove("hidden");
+        return;
+      }
+      state.deletingService = false;
+      closeDeleteModal();
+      await loadServices();
+      await loadSummary();
+    } finally {
+      state.deletingService = false;
+      loading.classList.add("hidden");
+      confirmBtn.disabled = false;
+      confirmBtn.textContent = "Confirmar eliminacion";
+      cancelBtn.disabled = false;
+      input.disabled = false;
     }
-    closeDeleteModal();
-    await loadServices();
-    await loadSummary();
   }
 
   async function loadServices(){
@@ -114,6 +152,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(activeServices.length === 0) return servicesListEl.textContent = "No hay servicios activos (todos fueron eliminados).";
 
     const t = document.createElement("table");
+    t.style.minWidth = "860px";
     t.innerHTML = `<thead><tr style="text-align:left"><th>ID</th><th>Tipo</th><th>Subtipo</th><th>Fecha</th><th>Horas</th><th>Obs</th><th>Accion</th></tr></thead>`;
     const body = document.createElement("tbody");
 
