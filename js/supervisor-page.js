@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(!res.services || res.services.length === 0) return c.textContent = "No hay servicios registrados.";
     const t = document.createElement("table");
     t.style.width = "100%";
+    t.style.minWidth = "1200px";
     t.innerHTML = `<thead><tr style="text-align:left"><th>ID</th><th>Legajo</th><th>Tipo</th><th>Subtipo</th><th>Fecha</th><th>Horas</th><th>Obs</th><th>Estado</th><th>Motivo baja</th><th>Baja por</th><th>Fecha baja</th></tr></thead>`;
     const body = document.createElement("tbody");
     res.services.forEach(s=>{
@@ -121,6 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const t = document.createElement("table");
     t.style.width = "100%";
+    t.style.minWidth = "760px";
     t.innerHTML = `<thead>
       <tr style="text-align:left">
         <th>#</th><th>Legajo destino</th><th>Mensaje</th><th>Fecha</th><th>Estado</th>
