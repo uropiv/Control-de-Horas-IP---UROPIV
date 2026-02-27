@@ -28,8 +28,12 @@
     </section>
 
     <section class="box" style="grid-column:1/-1">
-      <h3>Servicios</h3>
-      <div id="sup-services" class="small"></div>
+      <details class="collapsible" id="sup-services-collapsible">
+        <summary>Servicios</summary>
+        <div class="collapsible-content table-wrap">
+          <div id="sup-services" class="small"></div>
+        </div>
+      </details>
     </section>
 
 <section class="box">
@@ -53,7 +57,7 @@
 <section class="box" style="grid-column:1/-1">
   <h3>Sugerencias enviadas</h3>
   <button id="btn-load-suggestions">Actualizar sugerencias</button>
-  <div id="sup-suggestions" class="small" style="margin-top:10px"></div>
+  <div id="sup-suggestions" class="small table-wrap" style="margin-top:10px"></div>
 </section>
 
   </main>
