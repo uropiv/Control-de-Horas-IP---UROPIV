@@ -169,6 +169,7 @@ select:focus,
   gap: 8px;
   justify-content: flex-end;
   margin-top: 6px;
+  flex-wrap: wrap;
 }
 
 button,
@@ -213,6 +214,55 @@ button:disabled,
 .delete-service-btn {
   background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
   box-shadow: 0 6px 14px rgba(185, 28, 28, 0.25);
+}
+
+.secondary-btn {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  box-shadow: 0 6px 14px rgba(71, 85, 105, 0.25);
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.collapsible {
+  border: 1px solid #dbe5f2;
+  border-radius: 12px;
+  background: #f8fbff;
+  overflow: hidden;
+}
+
+.collapsible summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+  padding: 12px 14px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #183a66;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.collapsible summary::-webkit-details-marker {
+  display: none;
+}
+
+.collapsible summary::after {
+  content: "▼";
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.collapsible[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  padding: 0 14px 12px;
 }
 
 .modal-backdrop {
@@ -354,11 +404,40 @@ tbody tr:nth-child(even) {
 
   .header {
     padding: 14px 12px 8px;
+    flex-wrap: wrap;
   }
 
   .logo {
     width: 58px;
     height: 58px;
+  }
+
+  .actions button,
+  .smallbtn {
+    width: 100%;
+  }
+
+  table {
+    min-width: 720px;
+  }
+}
+
+@media (max-width: 560px) {
+  .header h1 {
+    width: 100%;
+  }
+
+  .subtitle {
+    width: 100%;
+  }
+
+  .box {
+    padding: 12px;
+  }
+
+  .modal-card {
+    width: 100%;
+    padding: 12px;
   }
 }
 
