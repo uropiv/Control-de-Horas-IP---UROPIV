@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Control Horas IP — Usuario</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="header">
+    <img src="assets/logo.jpg" alt="Policía San Luis" class="logo"/>
+    <div>
+      <h1>Control Horas IP — Usuario</h1>
+      <p class="subtitle">Registro de recargos y capacitaciones</p>
+    </div>
+    <div style="margin-left:auto">
+      <button id="btn-logout" class="smallbtn">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- COLUMNA PRINCIPAL (izq) -->
+    <section class="box">
+      <h2 style="margin:0 0 8px 0">Bienvenido <span id="user-name">Usuario</span></h2>
+      <p class="small">Legajo: <strong id="user-legajo"></strong></p>
+
+      <!-- FORMULARIOS IP + CURSO (dos bloques dentro de .form) -->
+      <div class="form" style="margin-top:12px">
+        <!-- ---------- Horas IP (recargos) ---------- -->
+        <div>
+          <h3 style="margin:0 0 8px 0">Registrar Horas IP (Recargos)</h3>
+          <label>
+            Subtipo (lugar / servicio)
+            <input id="ip-subtipo" class="input-text" type="text" placeholder="Ej: Vialidad / Banco / Cancha" />
+          </label>
+
+          <label>
+            Fecha del servicio
+            <input id="ip-fecha" class="input-text" type="date" />
+          </label>
+
+          <label>
+            Cantidad de horas
+            <input id="ip-horas" class="input-text" type="number" min="0" step="0.5" value="4" />
+          </label>
+
+          <label>
+            Observaciones
+            <input id="ip-obs" class="input-text" type="text" placeholder="Opcional: turno, detalle..." />
+          </label>
+
+          <div class="actions">
+            <button id="btn-add-ip">Agregar Horas IP</button>
+          </div>
+          <div id="msg-add-ip" class="small" aria-live="polite" style="margin-top:6px"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #eef2ff;margin:16px 0" />
+
+        <!-- ---------- Cursos / Capacitaciones ---------- -->
+        <div>
+          <h3 style="margin:0 0 8px 0">Registrar Curso / Capacitación</h3>
+          <label>
+            Nombre del curso / actividad
+            <input id="curso-subtipo" class="input-text" type="text" placeholder="Ej: RCP avanzado / Manejo defensivo" />
+          </label>
+
+          <label>
+            Fecha del curso
+            <input id="curso-fecha" class="input-text" type="date" />
+          </label>
+
+          <label>
+            Cantidad de horas
+            <input id="curso-horas" class="input-text" type="number" min="0" step="0.5" value="4" />
+          </label>
+
+          <label>
+            Observaciones
+            <input id="curso-obs" class="input-text" type="text" placeholder="Opcional: lugar, entidad, matrícula" />
+          </label>
+
+          <div class="actions">
+            <button id="btn-add-curso">Agregar Curso</button>
+          </div>
+          <div id="msg-add-curso" class="small" aria-live="polite" style="margin-top:6px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLUMNA DERECHA: resumen + progreso -->
+    <aside>
+      <section class="box" style="margin-bottom:16px">
+        <h3 style="margin-top:0">Resumen mensual</h3>
+
+        <label class="small">Año
+          <input id="res-year" class="input-text" type="number" min="2020" value="">
+        </label>
+
+        <label class="small">Mes
+          <select id="res-month" class="input-text"></select>
+        </label>
+
+        <div class="actions" style="justify-content:flex-start;">
+          <button id="btn-get-summary">Ver resumen</button>
+        </div>
+
+        <!-- BARRAS DE PROGRESO -->
+        <div id="progress-container" style="margin-top:12px">
+          <div class="progress-label"><span>Horas IP</span><span id="label-ip">0 / 40 h</span></div>
+          <div class="progress"><span id="bar-ip" class="progress-bar ip" style="width:0%"></span></div>
+
+          <div class="progress-label" style="margin-top:10px;"><span>Horas Cursos</span><span id="label-curso">0 / 40 h</span></div>
+          <div class="progress"><span id="bar-curso" class="progress-bar curso" style="width:0%"></span></div>
+
+          <div class="progress-label" style="margin-top:10px;"><span>Total consumido</span><span id="label-total">0 / 40 h</span></div>
+          <div class="progress"><span id="bar-total" class="progress-bar total" style="width:0%"></span></div>
+        </div>
+
+        <div id="summary-output" style="margin-top:12px" class="small"></div>
+      </section>
+
+      <section class="box">
+        <h3 style="margin-top:0">Mis sugerencias</h3>
+        <div id="user-suggestions" class="small">Cargando...</div>
+      </section>
+    </aside>
+
+    <!-- LISTADO COMPLETO DE SERVICIOS (full width) -->
+    <section class="box" style="grid-column:1/-1; margin-top:12px">
+      <h3 style="margin-top:0">Mis servicios registrados</h3>
+      <div id="services-list" class="small" style="margin-top:10px"></div>
+    </section>
+  </main>
+
+  <footer class="footer"><small>Policía Provincia de San Luis — Control Horas IP</small></footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/app-common.js"></script>
+  <script src="js/app-page.js"></script>
+</body>
+</html>
